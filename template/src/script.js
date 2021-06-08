@@ -1,7 +1,7 @@
 import './style.scss'
 import * as THREE from 'three'
 
-// sizes
+// Sizes
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
