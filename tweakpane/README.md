@@ -1,5 +1,5 @@
 # Tweakpane Tips
-Tweakpaneでよく使うThree.jsのパラメータ調整放っ法
+Tweakpaneでよく使うThree.jsのパラメータ調整
 
 - [Tweakpane](https://cocopon.github.io/tweakpane/)
 - [Demo](https://ohagip.github.io/study-threejs/tweakpane/)
