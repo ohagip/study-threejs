@@ -4,6 +4,7 @@
     "build": "webpack --config ./webpack.prod.js"
   },
   "dependencies": {
+    "debounce": "^1.2.1",
     "gsap": "^3.6.1",
     "three": "^0.129.0",
     "tweakpane": "^3.0.2"
