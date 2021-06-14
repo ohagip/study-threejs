@@ -9,7 +9,7 @@ module.exports = merge(
   {
     mode: 'production',
     output: {
-      path: path.resolve(__dirname, '../docs/template'),
+      path: path.resolve(__dirname, '../docs/camera-on-path'),
     },
     plugins: [new CleanWebpackPlugin()],
     optimization: {

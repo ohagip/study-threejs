@@ -115,7 +115,7 @@ const cameraPoints = new Points({
 // カメラの移動
 function updateCamera() {
   const cameraPosition = cameraPoints.getPosition(params.cameraProgress % 1)
-  const lookPosition = cameraPoints.getPosition((params.cameraProgress + 0.01) % 1)
+  const lookPosition = cameraPoints.getPosition((params.cameraProgress + 0.07) % 1) // 現在の位置より少し前に向かせる
   camera.position.copy(cameraPosition)
   camera.lookAt(lookPosition)
 }

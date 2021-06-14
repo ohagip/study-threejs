@@ -26,7 +26,7 @@ const position = curve.getPointAt(0.5) // range: 0〜1
 カメラの位置と回転に反映
 ```JS
 const cameraPosition = curve.getPointAt(0.5 % 1)
-const lookPosition = curve.getPointAt((0.5 + 0.01) % 1) // 現在の位置より少し前に向かせる
+const lookPosition = curve.getPointAt((0.5 + 0.7) % 1) // 現在の位置より少し前に向かせる
 camera.position.copy(cameraPosition)
 camera.lookAt(lookPosition)
 ```
