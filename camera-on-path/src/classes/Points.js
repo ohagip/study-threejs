@@ -4,40 +4,40 @@ import * as THREE from 'three'
  * Points
  * @param {Object} options
  * @param {THREE.Scene} options.scene
- * @param {string} options.pointColor - ポイントのカラーコード
- * @param {string} options.divisionPointColor - 分割ポイントのカラーコード
- * @param {string} options.lineColor - ラインコード
+ * @param {THREE.Vector3[]} options.point
  *
  */
 export default class Points {
-  constructor({ scene, pointColor, divisionPointColor, lineColor }) {
+  constructor({ scene, point }) {
     this.scene = scene
 
     // Geometry
     this.pointGeometry = new THREE.OctahedronGeometry(0.2)
-    this.divisionPointGeometry = new THREE.OctahedronGeometry(0.1)
+    this.splinePointGeometry = new THREE.OctahedronGeometry(0.1)
     this.lineGeometry = null
 
     // Material
-    this.pointMaterial = new THREE.MeshLambertMaterial({ color: pointColor })
-    this.divisionPointMaterial = new THREE.MeshLambertMaterial({ color: divisionPointColor })
-    this.lineMaterial = new THREE.MeshLambertMaterial({ color: lineColor })
+    this.pointMaterial = new THREE.MeshLambertMaterial({ color: '#ff3333' })
+    this.splinePointMaterial = new THREE.MeshLambertMaterial({ color: '#fa9595' })
+    this.lineMaterial = new THREE.MeshLambertMaterial({ color: '#ffcccc' })
 
     // Mesh
     this.pointMeshes = []
-    this.divisionMeshes = []
+    this.splineMeshes = []
     this.line = null
 
     // Curve
-    this.pointDivisionNum = 50
+    this.pointSplineNum = 50
     this.pointCurve = null
+
+    this.setPoint(point)
   }
 
   /**
-   * setup
+   * setPoint
    * @param {THREE.Vector3[]} positions
    */
-  setup(positions) {
+  setPoint(positions) {
     this.remove()
 
     // ポイント
@@ -49,17 +49,17 @@ export default class Points {
     })
 
     // 分割したポイント
-    this.pointCurve = new THREE.CatmullRomCurve3(positions)
-    const divisionPoints = this.pointCurve.getPoints(this.pointDivisionNum)
-    divisionPoints.forEach((point) => {
-      const mesh = new THREE.Mesh(this.divisionPointGeometry, this.divisionPointMaterial)
+    this.pointCurve = new THREE.CatmullRomCurve3(positions, true)
+    const splinePoints = this.pointCurve.getPoints(this.pointSplineNum)
+    splinePoints.forEach((point) => {
+      const mesh = new THREE.Mesh(this.splinePointGeometry, this.splinePointMaterial)
       mesh.position.copy(point)
-      this.divisionMeshes.push(mesh)
+      this.splineMeshes.push(mesh)
       this.scene.add(mesh)
     })
 
     // line
-    this.lineGeometry = new THREE.BufferGeometry().setFromPoints(divisionPoints)
+    this.lineGeometry = new THREE.BufferGeometry().setFromPoints(splinePoints)
     this.line = new THREE.Line(this.lineGeometry, this.lineMaterial)
     this.scene.add(this.line)
   }
@@ -85,7 +85,7 @@ export default class Points {
     this.pointMeshes.forEach((mesh) => {
       mesh.visible = true
     })
-    this.divisionMeshes.forEach((mesh) => {
+    this.splineMeshes.forEach((mesh) => {
       mesh.visible = true
     })
     if (this.line !== null) this.line.visible = true
@@ -95,7 +95,7 @@ export default class Points {
     this.pointMeshes.forEach((mesh) => {
       mesh.visible = false
     })
-    this.divisionMeshes.forEach((mesh) => {
+    this.splineMeshes.forEach((mesh) => {
       mesh.visible = false
     })
     if (this.line !== null) this.line.visible = false
@@ -105,7 +105,7 @@ export default class Points {
     this.pointMeshes.forEach((mesh) => {
       this.scene.remove(mesh)
     })
-    this.divisionMeshes.forEach((mesh) => {
+    this.splineMeshes.forEach((mesh) => {
       this.scene.remove(mesh)
     })
     if (this.line !== null) this.scene.remove(this.line)
@@ -115,11 +115,11 @@ export default class Points {
     this.remove()
 
     this.pointMaterial.dispose()
-    this.divisionPointMaterial.dispose()
+    this.splinePointMaterial.dispose()
     this.lineMaterial.dispose()
 
     this.pointGeometry.dispose()
-    this.divisionPointGeometry.dispose()
+    this.splinePointGeometry.dispose()
     if (this.lineGeometry !== null) this.lineGeometry.dispose()
   }
 }

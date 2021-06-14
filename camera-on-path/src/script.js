@@ -16,7 +16,7 @@ const sizes = {
 const params = {
   debug: true,
   cameraProgress: 0,
-  cameraDuration: 5,
+  cameraDuration: 8,
 }
 
 // Scene
@@ -26,17 +26,13 @@ scene.background = new THREE.Color('#232323')
 // Objects
 const objectPositions = [
   new THREE.Vector3(-10, 0, 0),
-  // new THREE.Vector3(-7.5, 0, 5),
   new THREE.Vector3(-5, 0, 0),
-  // new THREE.Vector3(-2.5, 0, -5),
   new THREE.Vector3(0, 0, 0),
-  // new THREE.Vector3(2.5, 0, 5),
   new THREE.Vector3(5, 0, 0),
-  // new THREE.Vector3(7.5, 0, -5),
   new THREE.Vector3(10, 0, 0),
 ]
 
-const objectGeometry = new THREE.BoxGeometry(1, 1, 1)
+const objectGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
 const objectMaterial = new THREE.MeshLambertMaterial({ color: '#54ac8f' })
 
 objectPositions.forEach((position) => {
@@ -90,52 +86,36 @@ onResize()
 
 // カメラポイント
 const cameraPositions = [
-  new THREE.Vector3(-12.5, 0.7, 0),
-  new THREE.Vector3(-10, 0.7, 2.5),
-  new THREE.Vector3(-7.5, 0.7, 0),
-  new THREE.Vector3(-5, 0.7, -2.5),
-  new THREE.Vector3(-2.5, 0.7, 0),
-  new THREE.Vector3(0, 0.7, 2.5),
-  new THREE.Vector3(2.5, 0.7, 0),
-  new THREE.Vector3(5, 0.7, -2.5),
-  new THREE.Vector3(7.5, 0.7, 0),
-  new THREE.Vector3(10, 0.7, 2.5),
-  new THREE.Vector3(12.5, 0.7, 0),
+  new THREE.Vector3(-12.5, 0.5, 0),
+  new THREE.Vector3(-10, 0.5, 2.5),
+  new THREE.Vector3(-7.5, 0.5, 0),
+  new THREE.Vector3(-5, 0.5, -2.5),
+  new THREE.Vector3(-2.5, 0.5, 0),
+  new THREE.Vector3(0, 0.5, 2.5),
+  new THREE.Vector3(2.5, 0.5, 0),
+  new THREE.Vector3(5, 0.5, -2.5),
+  new THREE.Vector3(7.5, 0.5, 0),
+  new THREE.Vector3(10, 0.5, 2.5),
+  new THREE.Vector3(12.5, 0.5, 0), // 折返し地点
+  new THREE.Vector3(10, 0.5, -2.5),
+  new THREE.Vector3(7.5, 0.5, 0),
+  new THREE.Vector3(5, 0.5, 2.5),
+  new THREE.Vector3(2.5, 0.5, 0),
+  new THREE.Vector3(0, 0.5, -2.5),
+  new THREE.Vector3(-2.5, 0.5, 0),
+  new THREE.Vector3(-5, 0.5, 2.5),
+  new THREE.Vector3(-7.5, 0.5, 0),
+  new THREE.Vector3(-10, 0.5, -2.5),
 ]
 const cameraPoints = new Points({
   scene,
-  pointColor: '#ff3333',
-  divisionPointColor: '#fa9595',
-  lineColor: '#ff3333'
+  point: cameraPositions,
 })
-cameraPoints.setup(cameraPositions)
-
-// カメラ視線ポイント
-const cameraLookPositions = [
-  new THREE.Vector3(-12, 0.5, 0),
-  new THREE.Vector3(-9.5, 0.5, 2.5),
-  new THREE.Vector3(-7, 0.5, 0),
-  new THREE.Vector3(-4.5, 0.5, -2.5),
-  new THREE.Vector3(-2, 0.5, 0),
-  new THREE.Vector3(0.5, 0.5, 2.5),
-  new THREE.Vector3(3, 0.5, 0),
-  new THREE.Vector3(5.5, 0.5, -2.5),
-  new THREE.Vector3(8, 0.5, 0),
-  new THREE.Vector3(10.5, 0.5, 2.5),
-  new THREE.Vector3(13, 0.5, 0),
-]
-const cameraLookPoints = new Points({
-  scene,
-  pointColor: '#338fff',
-  divisionPointColor: '#99d5fd',
-  lineColor: '#cee8fd'
-})
-cameraLookPoints.setup(cameraLookPositions)
 
 // カメラの移動
 function updateCamera() {
-  const cameraPosition = cameraPoints.getPosition(params.cameraProgress)
-  const lookPosition = cameraLookPoints.getPosition(params.cameraProgress)
+  const cameraPosition = cameraPoints.getPosition(params.cameraProgress % 1)
+  const lookPosition = cameraPoints.getPosition((params.cameraProgress + 0.01) % 1)
   camera.position.copy(cameraPosition)
   camera.lookAt(lookPosition)
 }
@@ -182,13 +162,11 @@ function disableDebug() {
 function showDebugObject() {
   cameraHelper.visible = true
   cameraPoints.show()
-  cameraLookPoints.show()
 }
 
 function hideDebugObject() {
   cameraHelper.visible = false
   cameraPoints.hide()
-  cameraLookPoints.hide()
 }
 
 if (params.debug === true) enableDebug()
