@@ -43,7 +43,7 @@ class App {
   }
 
   /**
-   * createScene
+   * createCamera
    */
   createCamera() {
     this.camera = new THREE.PerspectiveCamera(75, this.viewPort.aspect)
@@ -52,7 +52,7 @@ class App {
   }
 
   /**
-   * createScene
+   * createRenderer
    */
   createRenderer() {
     this.renderer = new THREE.WebGLRenderer({
@@ -61,7 +61,7 @@ class App {
   }
 
   /**
-   * createScene
+   * resize
    */
   resize() {
     this.camera.aspect = this.viewPort.aspect
@@ -70,21 +70,21 @@ class App {
   }
 
   /**
-   * createScene
+   * render
    */
   render() {
     this.renderer.render(this.scene, this.camera)
   }
 
   /**
-   * createScene
+   * update
    */
   update() {
     this.render()
   }
 
   /**
-   * createScene
+   * dispose
    */
   dispose() {
     this.disposeObjects()
@@ -98,14 +98,14 @@ class App {
   }
 
   /**
-   * createScene
+   * createObjects
    */
   createObjects() {
     this.boxObject = new BoxObject({ app: this })
   }
 
   /**
-   * createScene
+   * disposeObjects
    */
   disposeObjects() {
     this.boxObject.dispose()
