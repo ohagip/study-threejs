@@ -21,7 +21,7 @@ class App extends EventEmitter {
 
     // props
     this.props = {
-      debugMode: true,
+      debugMode: false,
     }
 
     // instance
@@ -116,6 +116,7 @@ class App extends EventEmitter {
       this.renderer.setViewport(0, 0, width * 0.3, height * 0.3)
       this.renderer.render(this.scene, this.camera.instance)
     } else {
+      this.visibleDebugObjects(false)
       this.renderer.clearColor()
       this.renderer.setViewport(0, 0, width, height)
       this.renderer.render(this.scene, this.camera.instance)

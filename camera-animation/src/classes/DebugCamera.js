@@ -10,6 +10,7 @@ export default class DebugCamera {
 
     this.update = this.update.bind(this)
     this.resize = this.resize.bind(this)
+    this.debugMode = this.debugMode.bind(this)
 
     this.instance = new THREE.PerspectiveCamera(75, this.app.viewPort.aspect, 1, 1000)
     this.instance.position.y = 20
@@ -21,7 +22,7 @@ export default class DebugCamera {
 
     this.app.viewPort.on('resize', this.resize)
     this.app.ticker.on('tick', this.update)
-    this.app.on('debugMode', this.update)
+    this.app.on('debugMode', this.debugMode)
 
     this.resize()
     this.debugMode(this.app.props.debugMode)

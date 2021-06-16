@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import normalizeWheel from 'normalize-wheel'
+import { clamp, lerp } from '../modules/utils/math'
 
 /**
  * Camera
@@ -9,10 +11,17 @@ export default class Camera {
 
     this.props = {
       progress: 0,
+      currentScrollSpeed: 0,
+      targetScrollSpeed: 0,
+      scrollSpeedLimit: 100,
+      scrollSpeedEase: 0.4,
+      scrollSpeedFriction: 10,
+      scrollSpeedToTimeRatio: 1 / 500,
     }
 
     this.update = this.update.bind(this)
     this.resize = this.resize.bind(this)
+    this.onWheel = this.onWheel.bind(this)
 
     this.parent = new THREE.Object3D()
     this.app.scene.add(this.parent)
@@ -30,6 +39,62 @@ export default class Camera {
   }
 
   /**
+   * addScrollEvents
+   */
+  addScrollEvents() {
+    document.addEventListener('wheel', this.onWheel)
+  }
+
+  /**
+   * removeScrollEvents
+   */
+  removeScrollEvents() {
+    document.removeEventListener('wheel', this.onWheel)
+  }
+
+  /**
+   * onWheel
+   */
+  onWheel(e) {
+    const n = normalizeWheel(e)
+    this.props.targetScrollSpeed = n.pixelY
+  }
+
+  /**
+   * calcScrollSpeedToAnimationTime
+   */
+  calcScrollSpeedToAnimationTime() {
+    // 制限
+    this.props.targetScrollSpeed = clamp(this.props.targetScrollSpeed, -this.props.scrollSpeedLimit, this.props.scrollSpeedLimit)
+
+    // 計算
+    this.props.currentScrollSpeed = lerp(this.props.currentScrollSpeed, this.props.targetScrollSpeed, this.props.scrollSpeedEase)
+
+    // 0.1以下, -0.1以上は0にする
+    if (Math.abs(this.props.currentScrollSpeed) <= 0.1) this.props.currentScrollSpeed = 0
+
+    // 減速
+    if (this.props.targetScrollSpeed > 0) {
+      const value = this.props.targetScrollSpeed - this.props.scrollSpeedFriction
+      this.props.targetScrollSpeed = Math.max(value, 0)
+    } else if (this.props.targetScrollSpeed < 0) {
+      const value = this.props.targetScrollSpeed + this.props.scrollSpeedFriction
+      this.props.targetScrollSpeed = Math.min(value, 0)
+    }
+
+    // アニメーション再生
+    let time = this.action.time + (this.props.currentScrollSpeed * this.props.scrollSpeedToTimeRatio)
+    time = time % this.clip.duration
+    if (time < 0) time = this.clip.duration + time
+    this.action.time = time
+
+    // debug
+    // if (this.props.currentScrollSpeed !==0) {
+    //   console.log(this.props.targetScrollSpeed, this.props.currentScrollSpeed)
+    // }
+  }
+
+  /**
    * setupAnimation
    * @param {object} gltf
    */
@@ -40,6 +105,7 @@ export default class Camera {
     this.action = this.mixer.clipAction(this.clip)
     this.action.play()
     this.action.paused = true
+    this.addScrollEvents()
     this.debug()
   }
 
@@ -47,6 +113,7 @@ export default class Camera {
    * dispose
    */
   dispose() {
+    this.removeScrollEvents()
     this.app.viewPort.off('resize', this.resize)
 
     this.app.scene.remove(this.parent)
@@ -73,6 +140,7 @@ export default class Camera {
    * update
    */
   update() {
+    this.calcScrollSpeedToAnimationTime()
     this.mixer.update(this.app.ticker.deltaTime / 1000)
   }
 
