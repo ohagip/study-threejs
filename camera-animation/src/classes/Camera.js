@@ -7,6 +7,10 @@ export default class Camera {
   constructor({ app }) {
     this.app = app
 
+    this.props = {
+      progress: 0,
+    }
+
     this.update = this.update.bind(this)
     this.resize = this.resize.bind(this)
 
@@ -35,6 +39,8 @@ export default class Camera {
     this.mixer = new THREE.AnimationMixer(this.parent)
     this.action = this.mixer.clipAction(this.clip)
     this.action.play()
+    this.action.paused = true
+    this.debug()
   }
 
   /**
@@ -71,10 +77,30 @@ export default class Camera {
   }
 
   /**
+   * setTimeWithProgress
+   * @param {number} progress
+   */
+  setTimeWithProgress(progress) {
+    this.action.time = this.clip.duration * progress
+  }
+
+  /**
    * visibleDebugObjects
    * @param {boolean} visible
    */
   visibleDebugObjects(visible) {
     this.helper.visible = visible
+  }
+
+  /**
+   * debug
+   */
+  debug() {
+    this.pane = this.app.debug.pane.addFolder({
+      title: 'Camera'
+    })
+
+    this.pane.addInput(this.props, 'progress', { min: 0, max: 1, step: 0.01 })
+      .on('change', (e) => { this.setTimeWithProgress(e.value) })
   }
 }
